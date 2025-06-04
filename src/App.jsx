@@ -1,62 +1,61 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
-import { AuthProvider } from "./contexts/authContext"
-import Login from "./pages/Login"
-import Signup from "./pages/Signup"
-import Overview from "./pages/Overview"
-import AddDefaulter from "./components/AddDefaulter"
-import Subscribe from "./components/Subscribe"
-import PageNotFound from "./pages/PageNotFound"
-import Profile from "./components/Profile"
-import Home from "./components/Home"
-import EditProfile from "./components/EditProfile"
-import MoneyBlockerFinder from "./components/MoneyBlockerFinder"
-import LoggedIn from "./components/LoggedIn/LoggedIn"
-import NotLoggedIn from "./components/NotLoggedIn/NotLoggedIn"
-import ForgetPassword from "./pages/ForgetPassword"
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { AuthProvider, useAuth } from "./contexts/authContext";
+import Login from "./pages/Login";
 
-import UpcommingClass from "./components/Request"
-import PastClass from "./components/PastClass"
-import Help from "./components/Help"
-import { useEffect } from "react"
-import Upcommingclass from "./components/Upcommingclass"
-import Request from "./components/Request"
-import Shedule from "./components/Shedule"
+import Overview from "./pages/Overview";
+
+
+import PageNotFound from "./pages/PageNotFound";
+import Profile from "./components/Profile";
+import Home from "./components/Home";
+
+import MoneyBlockerFinder from "./components/MoneyBlockerFinder";
+
+
+
+
+import PastClass from "./components/PastClass";
+import InspiringInstitutes from "./components/InspiringInstitutes";
+
+import Upcommingclass from "./components/Upcommingclass";
+import Request from "./components/Request";
+import Shedule from "./components/Shedule";
+import Campaigns from "./components/Campaigns";
+import EditButtons from "./components/EditButtons";
+import RecommendedCauses from "./components/RecommendedCauses";
 
 function App() {
-
-
+  
   return (
     <>
-     <AuthProvider> 
-     <BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
           <Routes>
-            <Route index element={<Navigate to="overview" />} />
-            <Route path="login" element={<LoggedIn Component={Login} />} />
-            <Route path="signup" element={<LoggedIn Component={Signup} />} />
-            
-            <Route path="overview" element={<NotLoggedIn Component={Overview} />}>
-              <Route index element={<Navigate to="home" />} />
-              <Route path="home" element={<Home />} />
-              <Route path="addDefaulter" element={<AddDefaulter />} />
+           
+            <Route path="/" element={<Login/>} />
+           <Route
+              path="overview"
+              element={<Overview/>}
+            >
              
-              <Route path="subscribe" element={<Subscribe />} />
+              <Route path="home" element={<Home />} />
+              <Route path="campaigns" element={<Campaigns  />} />
               <Route path="profile" element={<Profile />} />
-              <Route path="editProfile" element={<EditProfile />} />
+              <Route path="editbuttons" element={<EditButtons />} />
+              <Route path="inspiringinstitutes" element={<InspiringInstitutes />} />
+              <Route path="recommendedcauses" element={<RecommendedCauses />} />
               <Route path="teacher" element={<MoneyBlockerFinder />} />
               <Route path="request" element={<Request />} />
               <Route path="pastclass" element={<PastClass />} />
               <Route path="upcommingclass" element={<Upcommingclass />} />
               <Route path="shedule" element={<Shedule />} />
-              <Route path="help" element={<Help />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </BrowserRouter>
-     </AuthProvider>
-       
-    
+      </AuthProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
