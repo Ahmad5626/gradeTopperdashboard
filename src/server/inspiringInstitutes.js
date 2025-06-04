@@ -1,4 +1,4 @@
-const baseAPI= "http://localhost:9000";
+const baseAPI= "https://give-v59n.onrender.com";
 
 export const createInspiringInstitutes = async (data) => {
     try {

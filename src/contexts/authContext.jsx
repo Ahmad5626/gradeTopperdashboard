@@ -20,10 +20,10 @@ export const AuthProvider = ({ children }) => {
     const [allCausesData, setAllCausesData]=useState([])
 
 
- const baseAPI = "http://localhost:9000";
+ const baseAPI = "https://give-v59n.onrender.com";
 const deleteUser = async (id) => {
   try {
-    const res = await fetch(`http://localhost:9000/auth/delete-user/${id}`, {
+    const res = await fetch(`https://give-v59n.onrender.com/auth/delete-user/${id}`, {
       method: "DELETE",
       headers: {
         'Content-Type': 'application/json',
