@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ChevronDown, ChevronUp, MoreHorizontal, Search, Edit, Trash, Eye, X, Save, Filter, Upload, ImageIcon } from "lucide-react"
+import { ChevronDown, ChevronUp, MoreHorizontal, Search, Edit, Trash, Eye, X, Save, Filter } from "lucide-react"
 import CampaignDetails from "../components/CampaignDetails/CampaignDetails"
 import { useAuth } from "../contexts/authContext"
 import { toast, Toaster } from "sonner"
@@ -13,14 +13,14 @@ function App() {
   // Get real data from your backend via useAuth hook
   const { campaignData } = useAuth()
 
- // Use your real API data instead of dummy data
+  // Use your real API data instead of dummy data
   const [data, setData] = useState([])
   const [filteredData, setFilteredData] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedRows, setSelectedRows] = useState([])
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null })
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(5) // Changed to 5 items per page
+  const [itemsPerPage] = useState(20)
   const [columnsOpen, setColumnsOpen] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
@@ -32,7 +32,8 @@ function App() {
   const [viewingCampaign, setViewingCampaign] = useState(null)
   const [givenAmountFormdata, setGivenAmountFormdata] = useState(initailGivenAmount)
 
-  // Define all columns from the MongoDB schema including new ones
+
+  // Define all columns from the MongoDB schema
   const [visibleColumns, setVisibleColumns] = useState({
     status: true,
     campaignTitle: true,
@@ -43,7 +44,6 @@ function App() {
     fundType: true,
     isUrgent: true,
     endDate: true,
-    zakatVerified: true, // Added zakatVerified
     accountHolderName: false,
     accountNumber: false,
     bankName: false,
@@ -54,6 +54,7 @@ function App() {
     country: false,
     location: false,
     pincode: false,
+    zakatVerified: false,
     aadharImageUrl: false,
     address: false,
     agreeAll: false,
@@ -78,13 +79,12 @@ function App() {
     instituteRole: false,
     anticipatedDonations: false,
     spendingPlans: false,
-    supportingDocumentsUrl: false, // Added supportingDocumentsUrl
   })
 
   // Initialize data with campaignData from your backend
   useEffect(() => {
     if (campaignData && Array.isArray(campaignData)) {
-      setData(campaignData.slice().reverse())
+      setData(campaignData)
       setFilteredData(campaignData)
     }
   }, [campaignData])
@@ -149,47 +149,10 @@ function App() {
   }, [sortConfig])
 
   // Pagination
-  
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem)
   const totalPages = Math.ceil(filteredData.length / itemsPerPage)
-
-  // Generate page numbers for pagination
-  const getPageNumbers = () => {
-    const pageNumbers = []
-    const maxVisiblePages = 5
-
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i)
-      }
-    } else {
-      if (currentPage <= 3) {
-        for (let i = 1; i <= 4; i++) {
-          pageNumbers.push(i)
-        }
-        pageNumbers.push("...")
-        pageNumbers.push(totalPages)
-      } else if (currentPage >= totalPages - 2) {
-        pageNumbers.push(1)
-        pageNumbers.push("...")
-        for (let i = totalPages - 3; i <= totalPages; i++) {
-          pageNumbers.push(i)
-        }
-      } else {
-        pageNumbers.push(1)
-        pageNumbers.push("...")
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pageNumbers.push(i)
-        }
-        pageNumbers.push("...")
-        pageNumbers.push(totalPages)
-      }
-    }
-
-    return pageNumbers
-  }
 
   // Handle checkbox selection
   const handleSelectAll = () => {
@@ -251,21 +214,6 @@ function App() {
     return `₹${amount}`
   }
 
-  // Handle image upload
-  const handleImageUpload = (field, event) => {
-    const file = event.target.files[0]
-    if (file) {
-      // In a real application, you would upload the file to your server
-      // For now, we'll create a mock URL
-      const mockUrl = URL.createObjectURL(file)
-      setEditedItem((prev) => ({
-        ...prev,
-        [field]: mockUrl,
-      }))
-      toast.success(`${field} uploaded successfully`)
-    }
-  }
-
   // Handle view/edit/delete actions
   const handleViewItem = (item) => {
     setViewingCampaign(item)
@@ -280,32 +228,22 @@ function App() {
     setActiveTab("basic")
   }
 
-  const handleDeleteItem = async (id) => {
-    try {
-      // Mock API call for demo purposes
-      // In production, uncomment the fetch call
-      
-      const response = await fetch(`https://give-v59n.onrender.com/v1/api/delete-campaigns/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to delete campaign")
-      }
-      
-
-      // Mock successful deletion
-      toast.success("Campaign deleted successfully")
-      setData(data.filter((item) => (item._id || item.id) !== id))
-      setFilteredData(filteredData.filter((item) => (item._id || item.id) !== id))
-      setActionMenuOpen(null)
-    } catch (error) {
-      toast.error("Failed to delete campaign")
-      console.error("Error deleting campaign:", error)
+  const handleDeleteItem =async (id) => {
+    // const item = data.find((item) => (item._id || item.id) === id)
+    const response= await fetch(`https://give-v59n.onrender.com/v1/api/delete-campaigns/${id}`,{
+      method:"DELETE",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    if(!response.ok){
+      const errorData = await response.json()
+      throw new Error(errorData.message || "Failed to delete campaign")
     }
+    toast.success("Campaign deleted successfully")
+    setData(data.filter((item) => (item._id || item.id) !== id))
+    setFilteredData(filteredData.filter((item) => (item._id || item.id) !== id))
+    setActionMenuOpen(null)
   }
 
   // Handle input change in edit modal
@@ -327,25 +265,39 @@ function App() {
     }))
   }
 
-  // Updated Save edited item function with API call
+  // Save edited item
+  // const handleSaveEdit = () => {
+  //   const itemId = editedItem._id || editedItem.id
+
+
+  //   setData(data.map((item) => ((item._id || item.id) === itemId ? editedItem : item)))
+  //   setShowEditModal(false)
+  //   setSelectedItem(null)
+   
+  //   setEditedItem(null)
+  // }
+
+
+// Updated Save edited item function with API call
   const handleSaveEdit = async () => {
-    try {
+     try {
       const campaignId = editedItem._id || editedItem.id
 
-      // Mock API call for demo purposes
-      // In production, uncomment the fetch call
-      
-      const response = await fetch(`https://give-v59n.onrender.com/v1/api/update-campaigns/${campaignId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      // Make API call to update campaign
+      const response = await fetch( `https://give-v59n.onrender.com/v1/api/update-campaigns/${campaignId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+           
+          },
+          body: JSON.stringify({
           ...editedItem,
           status: editedItem.status, // Explicitly include status
         }),
-      })
-      if (!response.ok) {
+        },
+      )
+    if (!response.ok) {
         const errorData = await response.json()
         throw new Error(errorData.message || "Failed to update campaign")
       }
@@ -354,10 +306,6 @@ function App() {
 
       // Check if the response has the expected structure
       const updatedData = updatedCampaign.data || updatedCampaign
-      
-
-      
-      
 
       // Update local state with the response from server
       setData(
@@ -388,97 +336,58 @@ function App() {
       // Show success notification
       toast.success("Campaign updated successfully!")
     } catch (error) {
-      toast.error("Failed to update campaign")
       console.error("Error updating campaign:", error)
+      
     }
   }
 
   // Given Amount
-  const handleChangenGivenAmount = async (field, value) => {
-    setGivenAmountFormdata((prev) => ({
+const handleChangenGivenAmount= async(field,value)=>{
+ 
+   setGivenAmountFormdata((prev) => ({
       ...prev,
       [field]: value,
     }))
+}
+const handleAddGivenAmount=async()=>{
+ const campaignId = editedItem._id || editedItem.id
+  const response=await fetch(`https://give-v59n.onrender.com/v1/api/given-amount/${campaignId}`,{
+    method:"POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body:JSON.stringify(givenAmountFormdata)
+  })
+  const data=await response.json();
+  console.log(data);
+  if(data.success){
+    toast.success("Given Amount added successfully");
   }
+  else{
+    toast.error("Given Amount addition failed");
+  }
+}
 
-  const handleAddGivenAmount = async () => {
-    try {
-      const campaignId = editedItem._id || editedItem.id
 
-      // Mock API call for demo purposes
-      // In production, uncomment the fetch call
-      
-      const response = await fetch(`https://give-v59n.onrender.com/v1/api/given-amount/${campaignId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(givenAmountFormdata),
-      })
-      const data = await response.json()
-      
-
-      // Mock successful response
-      const mockResponse = { success: true }
-
-      if (mockResponse.success) {
-        // Add the new given amount to the edited item
-        const newGivenAmount = {
-          _id: `ga${Date.now()}`, // Generate a temporary ID
-          ...givenAmountFormdata,
-        }
-
-        setEditedItem((prev) => ({
-          ...prev,
-          givenAmount: [...(prev.givenAmount || []), newGivenAmount],
-        }))
-
-        // Reset form
-        setGivenAmountFormdata(initailGivenAmount)
-
-        toast.success("Given Amount added successfully")
-      } else {
-        toast.error("Given Amount addition failed")
-      }
-    } catch (error) {
-      toast.error("Given Amount addition failed")
-      console.error("Error adding given amount:", error)
+const handleDeleteGivenAmount=async(id,given)=>{
+  const response=await fetch(`https://give-v59n.onrender.com/v1/api/delete-given-amount/${id}/${given}`,{
+    method:"DELETE",
+    headers: {
+      'Content-Type': 'application/json',
     }
+  })
+  const data=await response.json();
+  console.log(id,given);
+  if(data.success){
+    toast.success("Given Amount deleted successfully");
   }
-
-  const handleDeleteGivenAmount = async (id, given) => {
-    try {
-      // Mock API call for demo purposes
-      // In production, uncomment the fetch call
-      
-      const response = await fetch(`https://give-v59n.onrender.com/v1/api/delete-given-amount/${id}/${given}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      const data = await response.json()
-      
-
-      // Mock successful response
-      const mockResponse = { success: true }
-
-      if (mockResponse.success) {
-        // Remove the given amount from the edited item
-        setEditedItem((prev) => ({
-          ...prev,
-          givenAmount: prev.givenAmount.filter((item) => item._id !== given),
-        }))
-
-        toast.success("Given Amount deleted successfully")
-      } else {
-        toast.error("Given Amount deletion failed")
-      }
-    } catch (error) {
-      toast.error("Given Amount deletion failed")
-      console.error("Error deleting given amount:", error)
-    }
-  }
+  else{
+    toast.error("Given Amount deletion failed");
+    console.log(data);
+    
+}
+}
+// console.log(givenAmountFormdata);
 
   // Add a function to strip HTML tags for table display
   const stripHtmlTags = (html) => {
@@ -520,10 +429,11 @@ function App() {
       </div>
     )
   }
+  // console.log(data);
 
   return (
     <div className="container mx-auto p-4">
-      <Toaster position="top-center" />
+    <Toaster position="top-center"/> 
       <div className="bg-white rounded-lg shadow">
         <div className="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="relative w-full md:w-auto flex-grow">
@@ -553,7 +463,7 @@ function App() {
                 <ChevronDown className="h-4 w-4 ml-2" />
               </button>
 
-              {showStatusFilter && (
+               {showStatusFilter && (
                 <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                   <div className="py-1">
                     {["All", "Pending", "Active", "Reject", "Terminate"].map((status) => (
@@ -734,9 +644,6 @@ function App() {
                 {visibleColumns.isUrgent && (
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Is Urgent</th>
                 )}
-                {visibleColumns.zakatVerified && (
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">Zakat Verified</th>
-                )}
                 {visibleColumns.endDate && (
                   <th
                     className="px-4 py-3 text-left font-medium text-gray-600 cursor-pointer"
@@ -768,7 +675,6 @@ function App() {
                       "goalAmount",
                       "fundType",
                       "isUrgent",
-                      "zakatVerified",
                       "endDate",
                     ].includes(column) &&
                     isVisible
@@ -818,17 +724,6 @@ function App() {
                     {visibleColumns.isUrgent && (
                       <td className="px-4 py-4 text-sm text-gray-900">{item.isUrgent ? "Yes" : "No"}</td>
                     )}
-                    {visibleColumns.zakatVerified && (
-                      <td className="px-4 py-4 text-sm text-gray-900">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            item.zakatVerified ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {item.zakatVerified ? "Verified" : "Not Verified"}
-                        </span>
-                      </td>
-                    )}
                     {visibleColumns.endDate && (
                       <td className="px-4 py-4 text-sm text-gray-900">{formatDate(item.endDate)}</td>
                     )}
@@ -844,7 +739,6 @@ function App() {
                           "goalAmount",
                           "fundType",
                           "isUrgent",
-                          "zakatVerified",
                           "endDate",
                         ].includes(column) &&
                         isVisible
@@ -866,8 +760,6 @@ function App() {
                           cellContent = item[column] ? "Yes" : "No"
                         } else if (column === "anticipatedDonations") {
                           cellContent = formatGoalAmount(item[column])
-                        } else if (column.includes("ImageUrl") || column.includes("Url")) {
-                          cellContent = item[column] ? "Available" : "Not Available"
                         } else {
                           cellContent = item[column] || ""
                         }
@@ -940,68 +832,39 @@ function App() {
           </table>
         </div>
 
-        {/* Enhanced Pagination */}
-        <div className="px-4 py-3 flex flex-col sm:flex-row items-center justify-between border-t border-gray-200 gap-4">
+        <div className="px-4 py-3 flex items-center justify-between border-t border-gray-200">
           <div className="text-sm text-gray-500">
-            Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredData.length)} of {filteredData.length}{" "}
-            entries
-            {selectedRows.length > 0 && ` (${selectedRows.length} selected)`}
+            {selectedRows.length} of {filteredData.length} row(s) selected.
           </div>
-
-          {totalPages > 1 && (
-            <div className="flex items-center space-x-1">
-              {/* Previous Button */}
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className={`px-3 py-2 text-sm rounded-md border ${
-                  currentPage === 1
-                    ? "text-gray-400 cursor-not-allowed border-gray-200 bg-gray-50"
-                    : "text-gray-700 hover:bg-gray-100 border-gray-300 bg-white"
-                }`}
-              >
-                Previous
-              </button>
-
-              {/* Page Numbers */}
-              {getPageNumbers().map((pageNumber, index) => (
-                <button
-                  key={index}
-                  onClick={() => typeof pageNumber === "number" && setCurrentPage(pageNumber)}
-                  disabled={pageNumber === "..."}
-                  className={`px-3 py-2 text-sm rounded-md border ${
-                    pageNumber === currentPage
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : pageNumber === "..."
-                        ? "text-gray-400 cursor-default border-gray-200 bg-gray-50"
-                        : "text-gray-700 hover:bg-gray-100 border-gray-300 bg-white"
-                  }`}
-                >
-                  {pageNumber}
-                </button>
-              ))}
-
-              {/* Next Button */}
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className={`px-3 py-2 text-sm rounded-md border ${
-                  currentPage === totalPages
-                    ? "text-gray-400 cursor-not-allowed border-gray-200 bg-gray-50"
-                    : "text-gray-700 hover:bg-gray-100 border-gray-300 bg-white"
-                }`}
-              >
-                Next
-              </button>
-            </div>
-          )}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 text-sm rounded-md ${
+                currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className={`px-4 py-2 text-sm rounded-md ${
+                currentPage === totalPages || totalPages === 0
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Comprehensive Edit Modal */}
       {showEditModal && editedItem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-medium">Edit Campaign</h3>
               <button className="text-gray-400 hover:text-gray-600" onClick={() => setShowEditModal(false)}>
@@ -1047,13 +910,7 @@ function App() {
               >
                 Institute Info
               </button>
-              <button
-                className={`px-4 py-2 text-sm font-medium ${activeTab === "images" ? "text-gray-800 border-b-2 border-gray-800" : "text-gray-500 hover:text-gray-700"}`}
-                onClick={() => setActiveTab("images")}
-              >
-                Images & Documents
-              </button>
-              <button
+               <button
                 className={`px-4 py-2 text-sm font-medium ${activeTab === "given" ? "text-gray-800 border-b-2 border-gray-800" : "text-gray-500 hover:text-gray-700"}`}
                 onClick={() => setActiveTab("given")}
               >
@@ -1081,25 +938,13 @@ function App() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Zakat Verified</label>
-                    <select
-                      className="w-full p-2 border border-gray-300 rounded-md"
-                      value={editedItem.zakatVerified ? "true" : "false"}
-                      onChange={(e) => handleInputChange("zakatVerified", e.target.value === "true")}
-                    >
-                      <option value="true">Verified</option>
-                      <option value="false">Not Verified</option>
-                    </select>
-                  </div>
-
-                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Ranking</label>
                     <select
                       className="w-full p-2 border border-gray-300 rounded-md"
                       value={editedItem.ranking}
                       onChange={(e) => handleInputChange("ranking", e.target.value)}
                     >
-                      <option value="Select">Select</option>
+                     <option value="Select">Select</option>
                       <option value="1">1</option>
                       <option value="2">2</option>
                       <option value="3">3</option>
@@ -1198,7 +1043,7 @@ function App() {
                       onChange={(e) => handleInputChange("goalAmount", Number.parseInt(e.target.value))}
                     />
                   </div>
-
+                 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
                     <input
@@ -1234,6 +1079,26 @@ function App() {
                       />
                     </div>
                   </div>
+                  {/* <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Number of Beneficiaries</label>
+                    <input
+                      type="text"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      value={editedItem.numberOfBeneficiaries || ""}
+                      onChange={(e) => handleInputChange("numberOfBeneficiaries", e.target.value)}
+                    />
+                  </div> */}
+                  {/* <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Is Beneficiary Orphan</label>
+                    <select
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      value={editedItem.isBeneficiaryOrphan || "No"}
+                      onChange={(e) => handleInputChange("isBeneficiaryOrphan", e.target.value)}
+                    >
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div> */}
                 </div>
               )}
 
@@ -1258,7 +1123,7 @@ function App() {
                       onChange={(e) => handleInputChange("lastName", e.target.value)}
                     />
                   </div>
-
+                 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Email of Imam Sahab</label>
                     <input
@@ -1361,6 +1226,15 @@ function App() {
                       onChange={(e) => handleNestedInputChange("address", "state", e.target.value)}
                     />
                   </div>
+                  {/* <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">District</label>
+                    <input
+                      type="text"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      value={editedItem.address?.district || ""}
+                      onChange={(e) => handleNestedInputChange("address", "district", e.target.value)}
+                    />
+                  </div> */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
                     <input
@@ -1406,381 +1280,82 @@ function App() {
                 </div>
               )}
 
-              {/* Images & Documents Tab */}
-              {activeTab === "images" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Feature Image */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-gray-700">Feature Image</label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                      {editedItem.featureImageUrl ? (
-                        <div className="space-y-3">
-                          <img
-                            src={editedItem.featureImageUrl || "/placeholder.svg"}
-                            alt="Feature"
-                            className="w-full h-32 object-cover rounded-md"
-                          />
-                          <div className="flex gap-2">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageUpload("featureImageUrl", e)}
-                              className="hidden"
-                              id="featureImage"
-                            />
-                            <label
-                              htmlFor="featureImage"
-                              className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Replace
-                            </label>
-                            <button
-                              onClick={() => handleInputChange("featureImageUrl", "")}
-                              className="px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                          <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-                          <div className="mt-2">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageUpload("featureImageUrl", e)}
-                              className="hidden"
-                              id="featureImage"
-                            />
-                            <label
-                              htmlFor="featureImage"
-                              className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Upload Feature Image
-                            </label>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Aadhar Image */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-gray-700">Aadhar Document</label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                      {editedItem.aadharImageUrl ? (
-                        <div className="space-y-3">
-                          <img
-                            src={editedItem.aadharImageUrl || "/placeholder.svg"}
-                            alt="Aadhar"
-                            className="w-full h-32 object-cover rounded-md"
-                          />
-                          <div className="flex gap-2">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageUpload("aadharImageUrl", e)}
-                              className="hidden"
-                              id="aadharImage"
-                            />
-                            <label
-                              htmlFor="aadharImage"
-                              className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Replace
-                            </label>
-                            <button
-                              onClick={() => handleInputChange("aadharImageUrl", "")}
-                              className="px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                          <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-                          <div className="mt-2">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageUpload("aadharImageUrl", e)}
-                              className="hidden"
-                              id="aadharImage"
-                            />
-                            <label
-                              htmlFor="aadharImage"
-                              className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Upload Aadhar Document
-                            </label>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* PAN Image */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-gray-700">PAN Document</label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                      {editedItem.panImageUrl ? (
-                        <div className="space-y-3">
-                          <img
-                            src={editedItem.panImageUrl || "/placeholder.svg"}
-                            alt="PAN"
-                            className="w-full h-32 object-cover rounded-md"
-                          />
-                          <div className="flex gap-2">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageUpload("panImageUrl", e)}
-                              className="hidden"
-                              id="panImage"
-                            />
-                            <label
-                              htmlFor="panImage"
-                              className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Replace
-                            </label>
-                            <button
-                              onClick={() => handleInputChange("panImageUrl", "")}
-                              className="px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                          <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-                          <div className="mt-2">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageUpload("panImageUrl", e)}
-                              className="hidden"
-                              id="panImage"
-                            />
-                            <label
-                              htmlFor="panImage"
-                              className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Upload PAN Document
-                            </label>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Government ID */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-medium text-gray-700">Government ID</label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                      {editedItem.governmentIdUrl ? (
-                        <div className="space-y-3">
-                          <img
-                            src={editedItem.governmentIdUrl || "/placeholder.svg"}
-                            alt="Government ID"
-                            className="w-full h-32 object-cover rounded-md"
-                          />
-                          <div className="flex gap-2">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageUpload("governmentIdUrl", e)}
-                              className="hidden"
-                              id="governmentId"
-                            />
-                            <label
-                              htmlFor="governmentId"
-                              className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Replace
-                            </label>
-                            <button
-                              onClick={() => handleInputChange("governmentIdUrl", "")}
-                              className="px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                          <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-                          <div className="mt-2">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageUpload("governmentIdUrl", e)}
-                              className="hidden"
-                              id="governmentId"
-                            />
-                            <label
-                              htmlFor="governmentId"
-                              className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Upload Government ID
-                            </label>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Supporting Documents */}
-                  <div className="space-y-3 md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700">Supporting Documents</label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                      {editedItem.supportingDocumentsUrl ? (
-                        <div className="space-y-3">
-                          <img
-                            src={editedItem.supportingDocumentsUrl || "/placeholder.svg"}
-                            alt="Supporting Documents"
-                            className="w-full h-32 object-cover rounded-md"
-                          />
-                          <div className="flex gap-2">
-                            <input
-                              type="file"
-                              accept="image/*,application/pdf"
-                              onChange={(e) => handleImageUpload("supportingDocumentsUrl", e)}
-                              className="hidden"
-                              id="supportingDocs"
-                            />
-                            <label
-                              htmlFor="supportingDocs"
-                              className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Replace
-                            </label>
-                            <button
-                              onClick={() => handleInputChange("supportingDocumentsUrl", "")}
-                              className="px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                          <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-                          <div className="mt-2">
-                            <input
-                              type="file"
-                              accept="image/*,application/pdf"
-                              onChange={(e) => handleImageUpload("supportingDocumentsUrl", e)}
-                              className="hidden"
-                              id="supportingDocs"
-                            />
-                            <label
-                              htmlFor="supportingDocs"
-                              className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Upload Supporting Documents
-                            </label>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Given Amount Tab */}
+               {/* Institute Info Tab */}
               {activeTab === "given" && (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                      <input
-                        type="number"
-                        name="amount"
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        value={givenAmountFormdata.amount || ""}
-                        onChange={(e) => handleChangenGivenAmount("amount", Number.parseInt(e.target.value))}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Headline</label>
-                      <input
-                        type="text"
-                        name="headline"
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        value={givenAmountFormdata.headline || ""}
-                        onChange={(e) => handleChangenGivenAmount("headline", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Sub Headline</label>
-                      <input
-                        type="text"
-                        name="subHeadline"
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        value={givenAmountFormdata.subHeadline || ""}
-                        onChange={(e) => handleChangenGivenAmount("subHeadline", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1 mt-7"></label>
-                      <button
-                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                        onClick={handleAddGivenAmount}
-                      >
-                        Add
-                      </button>
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                    <input
+                      type="number"
+                      name="amount"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      value={givenAmountFormdata.amount || ""}
+                      onChange={(e) => handleChangenGivenAmount("amount",  Number.parseInt(e.target.value))}
+                    />
                   </div>
-                  <div className="customContainer mt-10">
-                    <div className="overflow-hidden w-full bg-white border border-gray-200 rounded-lg shadow">
-                      <div className="px-6 py-4 border-b border-gray-200">
-                        <h3 className="text-lg font-medium text-gray-900">Given Amount</h3>
-                      </div>
-                      <div className="overflow-auto w-[500px] md:w-full">
-                        <div className="rounded-md border">
-                          <div className="flex justify-around bg-gray-50 p-4 font-medium">
-                            <div>Amount</div>
-                            <div>Headline</div>
-                            <div>SubHeadline</div>
-                            <div>Delete</div>
-                          </div>
-                          {editedItem.givenAmount && editedItem.givenAmount.length > 0 ? (
-                            editedItem.givenAmount.map((givenAmount, index) => (
-                              <div key={index} className="flex justify-between gap-10 p-4 border-t">
-                                <div className="w-[25%] text-center overflow-auto">{givenAmount.amount}</div>
-                                <div className="w-[25%] text-center overflow-auto">{givenAmount.headline}</div>
-                                <div className="w-[25%] text-center overflow-auto">{givenAmount.subHeadline}</div>
-                                <div className="w-[25%] text-center overflow-auto">
-                                  <button
-                                    className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 hover:bg-red-200"
-                                    onClick={() => handleDeleteGivenAmount(editedItem._id, givenAmount._id)}
-                                  >
-                                    <Trash className="h-3 w-3" />
-                                  </button>
-                                </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Headline</label>
+                    <input
+                      type="text"
+                      name="headline"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      value={givenAmountFormdata.headline || ""}
+                      onChange={(e) => handleChangenGivenAmount("headline", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sub Headline</label>
+                    <input
+                      type="text"
+                      name="subHeadline"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      value={givenAmountFormdata.subHeadline || ""}
+                      onChange={(e) => handleChangenGivenAmount("subHeadline", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 mt-7"></label>
+                    <Button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" onClick={handleAddGivenAmount}>Add</Button>
+
+                  </div>
+
+                   
+                </div>
+                <div className='customContainer mt-10'>
+                        <Card className=" overflow-hidden w-full">
+                          <CardHeader>
+                            <CardTitle>Given Amount</CardTitle>
+                          </CardHeader>
+                          <CardContent className="overflow-auto w-[500px] md:w-full" >
+                            <div className="rounded-md border ">
+                              <div className="flex justify-around bg-muted p-4 font-medium ">
+                                <div>Amount</div>
+                                <div>Headline</div>
+                                <div>SubHeadline</div>
+                                
+                                <div>Delete</div>
                               </div>
-                            ))
-                          ) : (
-                            <div className="p-4 text-center text-gray-500">No given amounts found</div>
-                          )}
-                        </div>
-                      </div>
+                              {editedItem.givenAmount.length > 0 ? (
+                                editedItem.givenAmount.map((givenAmount, index) => (
+                                  <div key={index} className="flex justify-between gap-10 p-4 border-t">
+                                    <div className='w-[25%] text-center overflow-auto'>{givenAmount.amount}</div>
+                                    <div className='w-[25%] text-center overflow-auto'>{givenAmount.headline}</div>
+                                    <div className='w-[25%] text-center overflow-auto'>{givenAmount.subHeadline}</div>
+                                    <div className='w-[25%] text-center overflow-auto'>
+                                      <button className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800" onClick={() => handleDeleteGivenAmount(editedItem._id, givenAmount._id)} >
+                                        <Trash  className="mr-1" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="p-4 text-center text-muted-foreground">No  found</div>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
                     </div>
-                  </div>
                 </>
               )}
             </div>
@@ -1801,5 +1376,7 @@ function App() {
     </div>
   )
 }
+
+
 
 export default App
