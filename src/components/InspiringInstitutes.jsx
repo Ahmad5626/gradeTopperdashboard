@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Toaster } from 'sonner'
-import { Delete, DeleteIcon, Trash } from 'lucide-react'
+import { Delete, DeleteIcon, Loader2, Trash } from 'lucide-react'
 
   const donations = [
     {
@@ -30,7 +30,7 @@ import { Delete, DeleteIcon, Trash } from 'lucide-react'
   ]
 
 const InspiringInstitutes = () => {
-    const {institutesFormData, handleChangeInstitutes,createInstitutesHandlesubmit,allInstituesData,handleDeleteInstitutes}=useAuth()
+    const {institutesFormData, handleChangeInstitutes,createInstitutesHandlesubmit,allInstituesData,handleDeleteInstitutes,setUploadingHero,uploadingHero}=useAuth()
   return (
     <div>
 
@@ -71,14 +71,25 @@ const InspiringInstitutes = () => {
                         </div>
                         <div className="w-full md:w-[48%] flex flex-col gap-2">
                             <label className="font-semibold text-xs text-gray-500 ">Upload Image</label>
-                            <input type="file" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="Enter the URL" name="instituteImage"
-                            
-                            onChange={handleChangeInstitutes}
-                        />
+
+
+                           {uploadingHero ? (
+                             <>
+                               <Loader2 className="w-8 h-8 mb-4 text-blue-500 animate-spin" />
+                                  <p className="mb-2 text-sm text-blue-600 font-semibold">Uploading ...</p>
+                             </>
+                           ) : (
+                             <>
+                               <input type="file" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="Enter the URL" name="instituteImage"
+                              onChange={handleChangeInstitutes}
+                             />
+                             </>
+                           )
+                           }
                         </div>
                         <div className='mt-4'>
-                        <button type="submit" className='px-8 py-3 cta text-white font-medium rounded-full hover:shadow-lg transition-all duration-300 hover:from-amber-600 hover:to-yellow-500  text-white p-2 px-5 rounded-lg font-semibold text-sm' >
-                            Submit
+                        <button type="submit" className='px-8 py-3 cta bg-[#f7a500] hover:shadow-lg transition-all duration-300 hover:from-amber-600 hover:to-yellow-500  text-white p-2 px-5 rounded-lg font-semibold text-sm' >
+                            Create
                         </button>
                     </div>
                         
@@ -108,7 +119,9 @@ const InspiringInstitutes = () => {
                                           <div className='w-[25%] text-center overflow-auto'>#{institues.headline}</div>
                                           <div className='w-[25%] text-center overflow-auto'>{institues.subHeadline}</div>
                                           <div className='w-[25%] text-center overflow-auto'>{institues.url}</div>
-                                          <div className='w-[25%] text-center overflow-auto'>{institues.instituteImage}</div>
+                                          <div className='w-[25%] text-center overflow-auto'>
+                                            <img src={institues.instituteImage} className="w-10 h-10 rounded-full" />
+                                          </div>
                                           <div className='w-[25%] text-center overflow-auto'>
                                             <button className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800" onClick={() => handleDeleteInstitutes(institues._id)} >
                                               <Trash  className="mr-1" />

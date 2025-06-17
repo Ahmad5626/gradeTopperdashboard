@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { all } from 'axios';
 import { toast } from 'sonner';
 import { initialInspiringInstitutes, initialRecommendedCauses, initialUpdateButton } from '../config';
 import updatebutton from '../server/buttons';
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
     const [allInstituesData, setAllInstituesData]=useState([])
     const [recommendedCausesFormData, setRecommendedCausesFormData]=useState(initialRecommendedCauses)
     const [allCausesData, setAllCausesData]=useState([])
-
+    const [uploadingHero, setUploadingHero] = useState(false)
 
  const baseAPI = "https://give-v59n.onrender.com";
 const deleteUser = async (id) => {
@@ -44,7 +44,27 @@ const deleteUser = async (id) => {
    
 
 
+const getRecommendedCauses=async()=>{
+         const data=await getAllRecommendedCauses()
+         if(data){
+           setAllCausesData(data.data)
+           
+         }else{
+           console.log(data)
+         }
+       }
+
+
 // Student Registration data
+
+   const geInstitutes=async()=>{
+         const data=await getAllInspiringInstitutes()
+         if(data){
+           setAllInstituesData(data.data)
+         }else{
+           console.log(data)
+         }
+       }
     useEffect(()=>{
         async function getData(){
          try{
@@ -72,27 +92,13 @@ const deleteUser = async (id) => {
         getCampaignData()
 
 
-       const geInstitutes=async()=>{
-         const data=await getAllInspiringInstitutes()
-         if(data){
-           setAllInstituesData(data.data)
-         }else{
-           console.log(data)
-         }
-       }
+    
        geInstitutes()
 
-       const getRecommendedCauses=async()=>{
-         const data=await getAllRecommendedCauses()
-         if(data){
-           setAllCausesData(data.data)
-         }else{
-           console.log(data)
-         }
-       }
+       
        getRecommendedCauses()
 
-        },[])
+        },[ ])
 
 
 // button data
@@ -125,7 +131,9 @@ const updateHandlesubmit = async (e) => {
 // Inspiring Institutes
 const handleChangeInstitutes =async (e) => {
   const {name, value,files} = e.target;
- if (files && files[0]) {
+try {
+  setUploadingHero(true)
+   if (files && files[0]) {
     const file = files[0];
     const uploadedUrl = await uploadFile(file);
 
@@ -139,6 +147,12 @@ const handleChangeInstitutes =async (e) => {
       [name]: value,
     });
   }
+} catch (error) {
+  toast.error("Image upload failed");
+}finally{
+  setUploadingHero(false)
+
+}
 }
 const createInstitutesHandlesubmit = async (e) => {
   e.preventDefault();
@@ -146,6 +160,7 @@ const createInstitutesHandlesubmit = async (e) => {
   
   if(data){
       toast.success("Institutes updated successfully");
+      window.location.reload()
   }
   else{
       toast.error("Institutes update failed");
@@ -163,6 +178,7 @@ const handleDeleteInstitutes=async(id)=>{
   const data=await deleteInspiringInstitutes(id)
   if(data){
     toast.success("Institutes deleted successfully");
+    window.location.reload()
   }
   else{
     toast.error("Institutes delete failed");
@@ -215,6 +231,7 @@ const handleCreateRecommendedCauses=async(e)=>{
   const data =await createRecommendedCauses(recommendedCausesFormData)
   if(data.success){
     toast.success("RecommendedCauses Created successfully");
+    window.location.reload()
   }
   else{
     toast.error("RecommendedCauses update failed");
@@ -226,6 +243,7 @@ const handleDeleteRecommendedCauses=async(id)=>{
   const data=await deleteRecommendedCauses(id)
   if(data){
     toast.success("RecommendedCauses deleted successfully");
+    window.location.reload()
   }
   else{
     toast.error("RecommendedCauses delete failed");
@@ -252,7 +270,9 @@ const handleDeleteRecommendedCauses=async(id)=>{
                recommendedCausesFormData,
                handleCreateRecommendedCauses,
                allCausesData,
-               handleDeleteRecommendedCauses
+               handleDeleteRecommendedCauses,
+               setUploadingHero,
+               uploadingHero
                 }}>
             {children}
         </AuthContext.Provider>

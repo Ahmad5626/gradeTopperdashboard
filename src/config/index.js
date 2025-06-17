@@ -11,7 +11,9 @@ export const initialInspiringInstitutes = {
 }
 export const initialRecommendedCauses={
     headline: "",
-    url: ""
+    category: "",
+    pageHeadline: "",
+    pageSubHeadline: "",
 }
 export const initailGivenAmount={
     amount:Number(0),

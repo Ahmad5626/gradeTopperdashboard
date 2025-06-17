@@ -4,6 +4,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { Delete, DeleteIcon, Trash } from 'lucide-react'
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
 
   const donations = [
     {
@@ -28,7 +29,16 @@ import { Delete, DeleteIcon, Trash } from 'lucide-react'
       status: "Completed",
     },
   ]
-
+// List of categories
+const categories = [
+  "Ulama",
+  "Madrasa",
+  "Education",
+  "Poor",
+  "Orphans",
+  "Medical relief",
+  "Masjid"
+]
 const RecommendedCauses = () => {
     const {handleChangeRecommendedCauses,handleCreateRecommendedCauses,recommendedCausesFormData,allCausesData,handleDeleteRecommendedCauses}=useAuth()
   return (
@@ -57,15 +67,42 @@ const RecommendedCauses = () => {
                         </div>
                         
                         <div className="w-full md:w-[48%] flex flex-col gap-2">
-                            <label className="font-semibold text-xs text-gray-500 ">Enter the URL</label>
-                            <input type="text" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="Enter the URL" name="url"
-                            value={recommendedCausesFormData.url}
+                            <label className="font-semibold text-xs text-gray-500 ">Category</label>
+                           
+
+                        <select className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="Select a category" name="category"
+                            value={recommendedCausesFormData.category}
                             onChange={handleChangeRecommendedCauses}
-                        />
+                             >
+                            <option value="">Select a category</option>
+                            {categories.map((category) => (
+                                <option key={category} value={category}>
+                                    {category}
+                                </option>
+                            ))}
+                        </select>
+
+                       
+                        </div>
+
+                        <div className="w-full md:w-[48%] flex flex-col gap-2">
+                            <label className="font-semibold text-xs text-gray-500 "> Page Headline </label>
+                            <input type="text" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="Enter Headline" name="pageHeadline"
+                            value={recommendedCausesFormData.pageHeadline}
+                            onChange={handleChangeRecommendedCauses}
+                             />
+                        </div>
+
+                        <div className="w-full md:w-[48%] flex flex-col gap-2">
+                            <label className="font-semibold text-xs text-gray-500 ">Page Sub Headline </label>
+                            <input type="text" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="Enter Headline" name="pageSubHeadline"
+                            value={recommendedCausesFormData.pageSubHeadline}
+                            onChange={handleChangeRecommendedCauses}
+                             />
                         </div>
                        
                         <div className='mt-4'>
-                        <button type="submit" className='px-8 py-3 cta text-white font-medium rounded-full hover:shadow-lg transition-all duration-300 hover:from-amber-600 hover:to-yellow-500  text-white p-2 px-5 rounded-lg font-semibold text-sm' >
+                        <button type="submit" className='bg-[#f7a500] py-3 cta  hover:shadow-lg transition-all duration-300 hover:from-amber-600 hover:to-yellow-500  text-white p-2 px-5 rounded-lg font-semibold text-sm' >
                             Create 
                         </button>
                     </div>
@@ -86,20 +123,27 @@ const RecommendedCauses = () => {
                                     <div className="flex justify-around bg-muted p-4 font-medium ">
                                       <div>Headline</div>
                                       
-                                      <div>Url</div>
-                                     
+                                      <div>Category</div>
+                                     <div className=''>
+                                      Page Headline
+                                     </div>
+                                     <div className=''>
+                                      Page Sub Headline
+                                     </div>
                                       <div>Delete</div>
                                     </div>
                                     {allCausesData.length > 0 ? (
                                       allCausesData.map((institues) => (
                                         <div key={institues._id} className="flex justify-between gap-10 p-4 border-t">
-                                          <div className='w-[25%] text-center overflow-auto'>#{institues.headline}</div>
+                                          <div className='w-[25%] text-center overflow-auto'>{institues.headline}</div>
                                           
-                                          <div className='w-[25%] text-center overflow-auto'>{institues.url}</div>
+                                          <div className='w-[25%] text-center overflow-auto'>{institues.category}</div>
+                                          <div className='w-[25%] text-center overflow-auto'>{institues.pageHeadline}</div>
+                                          <div className='w-[25%] text-center overflow-auto'>{institues.pageSubHeadline}</div>
                                         
                                           <div className='w-[25%] text-center overflow-auto'>
-                                            <button className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800" onClick={() => handleDeleteRecommendedCauses(institues._id)} >
-                                              <Trash  className="mr-1" />
+                                            <button className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 " onClick={() => handleDeleteRecommendedCauses(institues._id)} >
+                                              <Trash  className="mr-1 " />
                                             </button>
                                           </div>
                                         </div>

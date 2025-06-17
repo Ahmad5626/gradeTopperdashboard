@@ -253,18 +253,32 @@ function App() {
 
   // Handle image upload
   const handleImageUpload = (field, event) => {
-    const file = event.target.files[0]
-    if (file) {
-      // In a real application, you would upload the file to your server
-      // For now, we'll create a mock URL
-      const mockUrl = URL.createObjectURL(file)
-      setEditedItem((prev) => ({
+  const files = event.target.files;
+
+  if (files.length > 0) {
+    const uploadedUrls = Array.from(files).map((file) => URL.createObjectURL(file));
+
+    setEditedItem((prev) => {
+      const prevValue = prev[field];
+
+      // Handle multiple-upload fields (arrays)
+      if (Array.isArray(prevValue)) {
+        return {
+          ...prev,
+          [field]: [...prevValue, ...uploadedUrls],
+        };
+      }
+
+      // Handle single-upload fields (strings)
+      return {
         ...prev,
-        [field]: mockUrl,
-      }))
-      toast.success(`${field} uploaded successfully`)
-    }
+        [field]: uploadedUrls[0], // just take the first file
+      };
+    });
+
+    toast.success(`${files.length} file(s) uploaded successfully`);
   }
+};
 
   // Handle view/edit/delete actions
   const handleViewItem = (item) => {
@@ -1643,61 +1657,78 @@ function App() {
 
                   {/* Supporting Documents */}
                   <div className="space-y-3 md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700">Supporting Documents</label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                      {editedItem.supportingDocumentsUrl ? (
-                        <div className="space-y-3">
-                          <img
-                            src={editedItem.supportingDocumentsUrl || "/placeholder.svg"}
-                            alt="Supporting Documents"
-                            className="w-full h-32 object-cover rounded-md"
-                          />
-                          <div className="flex gap-2">
-                            <input
-                              type="file"
-                              accept="image/*,application/pdf"
-                              onChange={(e) => handleImageUpload("supportingDocumentsUrl", e)}
-                              className="hidden"
-                              id="supportingDocs"
-                            />
-                            <label
-                              htmlFor="supportingDocs"
-                              className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Replace
-                            </label>
-                            <button
-                              onClick={() => handleInputChange("supportingDocumentsUrl", "")}
-                              className="px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                          <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
-                          <div className="mt-2">
-                            <input
-                              type="file"
-                              accept="image/*,application/pdf"
-                              onChange={(e) => handleImageUpload("supportingDocumentsUrl", e)}
-                              className="hidden"
-                              id="supportingDocs"
-                            />
-                            <label
-                              htmlFor="supportingDocs"
-                              className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
-                            >
-                              <Upload className="h-4 w-4 mr-2" />
-                              Upload Supporting Documents
-                            </label>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+  <label className="block text-sm font-medium text-gray-700">Supporting Documents</label>
+  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+    {editedItem.supportingDocumentsUrl?.length > 0 ? (
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {editedItem.supportingDocumentsUrl.map((url, index) => (
+            <div key={index} className="relative group">
+              {url.endsWith(".pdf") ? (
+                <div className="h-32 flex items-center justify-center bg-gray-100 rounded-md border">
+                  <span className="text-sm text-gray-500">PDF File</span>
+                </div>
+              ) : (
+                <img
+                  src={url}
+                  alt={`Document ${index + 1}`}
+                  className="w-full h-32 object-cover rounded-md"
+                />
+              )}
+              <button
+                onClick={() => {
+                  setEditedItem((prev) => ({
+                    ...prev,
+                    supportingDocumentsUrl: prev.supportingDocumentsUrl.filter((_, i) => i !== index),
+                  }));
+                }}
+                className="absolute top-1 right-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded hover:bg-red-700"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+        <input
+          type="file"
+          accept="image/*,application/pdf"
+          onChange={(e) => handleImageUpload("supportingDocumentsUrl", e)}
+          multiple
+          className="hidden"
+          id="supportingDocs"
+        />
+        <label
+          htmlFor="supportingDocs"
+          className="flex items-center px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
+        >
+          <Upload className="h-4 w-4 mr-2" />
+          Upload More
+        </label>
+      </div>
+    ) : (
+      <div className="text-center">
+        <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+        <div className="mt-2">
+          <input
+            type="file"
+            accept="image/*,application/pdf"
+            onChange={(e) => handleImageUpload("supportingDocumentsUrl", e)}
+            multiple
+            className="hidden"
+            id="supportingDocs"
+          />
+          <label
+            htmlFor="supportingDocs"
+            className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 cursor-pointer"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Upload Supporting Documents
+          </label>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
                 </div>
               )}
 
@@ -1725,16 +1756,7 @@ function App() {
                         onChange={(e) => handleChangenGivenAmount("headline", e.target.value)}
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Sub Headline</label>
-                      <input
-                        type="text"
-                        name="subHeadline"
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        value={givenAmountFormdata.subHeadline || ""}
-                        onChange={(e) => handleChangenGivenAmount("subHeadline", e.target.value)}
-                      />
-                    </div>
+                 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1 mt-7"></label>
                       <button
@@ -1755,7 +1777,7 @@ function App() {
                           <div className="flex justify-around bg-gray-50 p-4 font-medium">
                             <div>Amount</div>
                             <div>Headline</div>
-                            <div>SubHeadline</div>
+                           
                             <div>Delete</div>
                           </div>
                           {editedItem.givenAmount && editedItem.givenAmount.length > 0 ? (
@@ -1763,7 +1785,7 @@ function App() {
                               <div key={index} className="flex justify-between gap-10 p-4 border-t">
                                 <div className="w-[25%] text-center overflow-auto">{givenAmount.amount}</div>
                                 <div className="w-[25%] text-center overflow-auto">{givenAmount.headline}</div>
-                                <div className="w-[25%] text-center overflow-auto">{givenAmount.subHeadline}</div>
+                                
                                 <div className="w-[25%] text-center overflow-auto">
                                   <button
                                     className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 hover:bg-red-200"
