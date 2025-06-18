@@ -6,6 +6,7 @@ import updatebutton from '../server/buttons';
 import {createInspiringInstitutes,deleteInspiringInstitutes,getAllInspiringInstitutes, updateInspiringInstitutes} from '../server/inspiringInstitutes';
 import { uploadFile } from '../server/uploadImg';
 import { createRecommendedCauses, deleteRecommendedCauses, getAllRecommendedCauses } from '../server/recommendedCauses';
+import { deleteFundRequest, getAllFundRequests } from '../server/fundRequest';
 // import getCampaignData from '../server/capmaign';
 
 const AuthContext = createContext();
@@ -19,7 +20,7 @@ export const AuthProvider = ({ children }) => {
     const [recommendedCausesFormData, setRecommendedCausesFormData]=useState(initialRecommendedCauses)
     const [allCausesData, setAllCausesData]=useState([])
     const [uploadingHero, setUploadingHero] = useState(false)
-
+    const [fundRequsetData, setFundRequestData]=useState([])
  const baseAPI = "https://give-v59n.onrender.com";
 const deleteUser = async (id) => {
   try {
@@ -65,6 +66,24 @@ const getRecommendedCauses=async()=>{
            console.log(data)
          }
        }
+
+
+       // fund request
+
+const getFundRequests=async()=>{
+  try {
+    
+  const res=await getAllFundRequests();
+if(res){
+  setFundRequestData(res.data)
+  
+}
+  
+  
+  } catch (error) {
+      console.log(error);
+   }
+}
     useEffect(()=>{
         async function getData(){
          try{
@@ -97,8 +116,8 @@ const getRecommendedCauses=async()=>{
 
        
        getRecommendedCauses()
-
-        },[ ])
+      getFundRequests()
+        },[])
 
 
 // button data
@@ -160,7 +179,7 @@ const createInstitutesHandlesubmit = async (e) => {
   
   if(data){
       toast.success("Institutes updated successfully");
-      window.location.reload()
+      // window.location.reload()
   }
   else{
       toast.error("Institutes update failed");
@@ -250,6 +269,19 @@ const handleDeleteRecommendedCauses=async(id)=>{
   }
 }
 
+// fund request
+const handleDeleteFundRequest=async(id)=>{
+  const data=await deleteFundRequest(id)
+  if(data){
+    toast.success("Fund request deleted successfully");
+    window.location.reload()
+  }
+  else{
+    toast.error("Fund request delete failed");
+  }
+}
+
+
 
     return (
         <AuthContext.Provider value={
@@ -272,7 +304,9 @@ const handleDeleteRecommendedCauses=async(id)=>{
                allCausesData,
                handleDeleteRecommendedCauses,
                setUploadingHero,
-               uploadingHero
+               uploadingHero,
+               fundRequsetData,
+               handleDeleteFundRequest
                 }}>
             {children}
         </AuthContext.Provider>

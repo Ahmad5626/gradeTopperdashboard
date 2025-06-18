@@ -79,6 +79,11 @@ useEffect(() => {
                               <i className="fa-solid fa-hand-holding-dollar"></i>  
                                Donations </NavLink>
                             </li>
+
+                             <li className="hover:translate-x-2 duration-200 "><NavLink to={'/overview/fundrequest'}  className="text-md">
+                              <i className="fa-solid fa-hand-holding-dollar"></i>  
+                               Fund Requests </NavLink>
+                            </li>
                            <li className="hover:translate-x-2 duration-200"><NavLink to={'/'} onClick={handleSideBar2}  className="text-md font-semibold">
                                 <i className="fa-solid fa-right-from-bracket me-1 font-sm text-gray-100"></i>Logout</NavLink>
                             </li>

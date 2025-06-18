@@ -23,6 +23,7 @@ import Shedule from "./components/Shedule";
 import Campaigns from "./components/Campaigns";
 import EditButtons from "./components/EditButtons";
 import RecommendedCauses from "./components/RecommendedCauses";
+import FundRequest from "./components/FundRequest";
 
 function App() {
   
@@ -49,6 +50,7 @@ function App() {
               <Route path="pastclass" element={<PastClass />} />
               <Route path="upcommingclass" element={<Upcommingclass />} />
               <Route path="shedule" element={<Shedule />} />
+              <Route path="fundrequest" element={<FundRequest />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
