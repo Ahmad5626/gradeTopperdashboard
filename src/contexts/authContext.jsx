@@ -179,7 +179,7 @@ const createInstitutesHandlesubmit = async (e) => {
   
   if(data){
       toast.success("Institutes updated successfully");
-      window.location.reload()
+      // window.location.reload()
   }
   else{
       toast.error("Institutes update failed");
