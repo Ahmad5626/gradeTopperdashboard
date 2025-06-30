@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Toaster } from 'sonner'
-import { Delete, DeleteIcon, Trash } from 'lucide-react'
+import { Delete, DeleteIcon, Loader2, Trash } from 'lucide-react'
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
 
   const donations = [
@@ -40,7 +40,7 @@ const categories = [
   "Masjid"
 ]
 const RecommendedCauses = () => {
-    const {handleChangeRecommendedCauses,handleCreateRecommendedCauses,recommendedCausesFormData,allCausesData,handleDeleteRecommendedCauses}=useAuth()
+    const {handleChangeRecommendedCauses,handleCreateRecommendedCauses,recommendedCausesFormData,allCausesData,handleDeleteRecommendedCauses,uploadingHero}=useAuth()
   return (
     <div>
 
@@ -100,6 +100,32 @@ const RecommendedCauses = () => {
                             onChange={handleChangeRecommendedCauses}
                              />
                         </div>
+
+                         <div className="w-full md:w-[48%] flex flex-col gap-2">
+                            <label className="font-semibold text-xs text-gray-500 ">Enter the URL</label>
+                            <input type="text" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="Enter the URL" name="pageCta"
+                            value={recommendedCausesFormData.pageCta}
+                            onChange={handleChangeRecommendedCauses}
+                        />
+                        </div>
+                        <div className="w-full md:w-[48%] flex flex-col gap-2">
+                            <label className="font-semibold text-xs text-gray-500 ">Upload Image</label>
+
+
+                           {uploadingHero ? (
+                             <>
+                               <Loader2 className="w-8 h-8 mb-4 text-blue-500 animate-spin" />
+                                  <p className="mb-2 text-sm text-blue-600 font-semibold">Uploading ...</p>
+                             </>
+                           ) : (
+                             <>
+                               <input type="file" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="Enter the URL" name="pageImage"
+                              onChange={handleChangeRecommendedCauses}
+                             />
+                             </>
+                           )
+                           }
+                        </div>
                        
                         <div className='mt-4'>
                         <button type="submit" className='bg-[#f7a500] py-3 cta  hover:shadow-lg transition-all duration-300 hover:from-amber-600 hover:to-yellow-500  text-white p-2 px-5 rounded-lg font-semibold text-sm' >
@@ -138,12 +164,12 @@ const RecommendedCauses = () => {
                                           <div className='w-[25%] text-center overflow-auto'>{institues.headline}</div>
                                           
                                           <div className='w-[25%] text-center overflow-auto'>{institues.category}</div>
-                                          <div className='w-[25%] text-center overflow-auto'>{institues.pageHeadline}</div>
-                                          <div className='w-[25%] text-center overflow-auto'>{institues.pageSubHeadline}</div>
+                                          <div className='w-[25%] h-[70px]  text-center overflow-auto'>{institues.pageHeadline}</div>
+                                          <div className='w-[25%] h-[70px] text-center overflow-auto'>{institues.pageSubHeadline}</div>
                                         
                                           <div className='w-[25%] text-center overflow-auto'>
                                             <button className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 " onClick={() => handleDeleteRecommendedCauses(institues._id)} >
-                                              <Trash  className="mr-1 " />
+                                              <Trash  className="mr-1 font-[8px]" />
                                             </button>
                                           </div>
                                         </div>

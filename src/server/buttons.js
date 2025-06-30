@@ -1,9 +1,9 @@
-const baseAPI = "https://give-v59n.onrender.com";
+import { baseUrl } from "../utils/Constant";
 
-const updatebutton = async (data) => {
+ export const updatebutton = async (data) => {
     
     try {
-        const response = await fetch(`${baseAPI}/v1/api/buttons/update-all-buttons`, {
+        const response = await fetch(`${baseUrl}/v1/api/buttons/update-all-buttons`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -11,7 +11,7 @@ const updatebutton = async (data) => {
             body: JSON.stringify(data),
         });
         const buttonData=await response.json();
-        console.log(buttonData);
+        // console.log(buttonData);
         return buttonData
 
     } catch (error) {
@@ -19,4 +19,18 @@ const updatebutton = async (data) => {
     }
 }
 
-export default updatebutton
+ export const getButtons = async () => {
+    try {
+        const res = await fetch(`${baseUrl}/v1/api/buttons/get-all-buttons`,{
+            method:"GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await res.json();
+        return data.data;
+    } catch (err) {
+        console.log(err);
+    }
+};
+

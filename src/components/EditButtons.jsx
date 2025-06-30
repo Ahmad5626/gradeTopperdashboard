@@ -25,26 +25,35 @@ function EditButtons() {
                         <div className="w-full flex flex-col gap-2">
                             <label className="font-semibold text-xs text-gray-500 ">Hero section Button</label>
                             <input type="text" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="https://www.google.com" name="heroSectionButton"
-                            value={buttonData.heroSectionButton}
-                            onChange={handleChange} />
+                            defaultValue={buttonData.heroSectionButton}
+                             />
                         </div>
                         <div className="w-full flex flex-col gap-2">
                             <label className="font-semibold text-xs text-gray-500 ">Honor Their</label>
                             <input type="text" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="https://www.google.com" name="honorTheirButton"
-                            value={buttonData.honorTheirButton}
-                            onChange={handleChange}  />
+                            defaultValue={buttonData.honorTheirButton}
+                             />
                         </div>
                         <div className="w-full flex flex-col gap-2">
                             <label className="font-semibold text-xs text-gray-500 ">Fundraise with Faith Button</label>
                             <input type="text" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="https://www.google.com" name="fundraiseWithFaithButton"
-                            value={buttonData.fundraiseWithFaithButton} onChange={handleChange} />
+                           defaultValue={buttonData.fundraiseWithFaithButton}
+
+                           />
+                        </div>
+                         <div className="w-full flex flex-col gap-2">
+                            <label className="font-semibold text-xs text-gray-500 ">Discovery Button</label>
+                            <input type="text" className="border rounded-lg px-3 py-2 text-sm w-full outline-none border-gray-200 bg-gray-100" placeholder="https://www.google.com" name="discoveryButton"
+                            defaultValue={buttonData.discoveryButton}
+
+                            />
                         </div>
                        
                         
                     </div>
                  
                     <div className='mt-4'>
-                        <button type="submit" className='px-8 py-3 cta text-white font-medium rounded-full hover:shadow-lg transition-all duration-300 hover:from-amber-600 hover:to-yellow-500  text-white p-2 px-5 rounded-lg font-semibold text-sm' >
+                        <button type="submit" className='px-8 py-3 cta bg-[#f7a500] text-white font-medium rounded-full hover:shadow-lg transition-all duration-300 hover:from-amber-600 hover:to-yellow-500  text-white p-2 px-5 rounded-lg font-semibold text-sm' >
                            SAVE & UPDATE
                         </button>
                     </div>

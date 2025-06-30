@@ -1,8 +1,8 @@
- const baseAPI = "https://give-v59n.onrender.com";
+ import { baseUrl } from "../utils/Constant";
 
 export const createFundRequest = async (formData) => {
   try {
-    const response = await fetch(`${baseAPI}/v1/api/fundRequest/create-fund-request`, {
+    const response = await fetch(`${baseUrl}/v1/api/fundRequest/create-fund-request`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,7 +24,7 @@ export const createFundRequest = async (formData) => {
 
 export const getAllFundRequests = async () => {
   try {
-    const response = await fetch(`${baseAPI}/v1/api/fundRequest/get-fund-requests`, {
+    const response = await fetch(`${baseUrl}/v1/api/fundRequest/get-fund-requests`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -38,7 +38,7 @@ export const getAllFundRequests = async () => {
 };
 export const  deleteFundRequest = async (id) => {
   try {
-    const response = await fetch(`${baseAPI}/v1/api/fundRequest/delete-fund-request/${id}`, {
+    const response = await fetch(`${baseUrl}/v1/api/fundRequest/delete-fund-request/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

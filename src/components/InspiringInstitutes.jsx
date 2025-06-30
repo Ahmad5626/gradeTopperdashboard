@@ -116,7 +116,7 @@ const InspiringInstitutes = () => {
                                     {allInstituesData.length > 0 ? (
                                       allInstituesData.map((institues) => (
                                         <div key={institues._id} className="flex justify-between gap-10 p-4 border-t">
-                                          <div className='w-[25%] text-center overflow-auto'>#{institues.headline}</div>
+                                          <div className='w-[25%] text-center overflow-auto'>{institues.headline}</div>
                                           <div className='w-[25%] text-center overflow-auto'>{institues.subHeadline}</div>
                                           <div className='w-[25%] text-center overflow-auto'>{institues.url}</div>
                                           <div className='w-[25%] text-center overflow-auto'>

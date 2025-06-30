@@ -52,7 +52,7 @@ useEffect(() => {
                     </div>
                     <div className="drawer-side h-fit ">
                         <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
-                        <ul className="menu py-4 px-2 w-80 bg-[#d6ac52] h-[100dvh] lg:h-[100dvh] text-white text-[15px]">
+                        <ul className="menu py-4 px-2 w-[250px] bg-[#d6ac52] h-[100dvh] lg:h-[100dvh] text-white text-[15px]">
                             <li>
                                 <img src="/img/logo.png" className="w-48 h-32 object-contain" alt="" />
                             </li>

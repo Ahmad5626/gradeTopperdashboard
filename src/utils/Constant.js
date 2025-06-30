@@ -1,0 +1,1 @@
+export const baseUrl = "https://give-v59n.onrender.com"

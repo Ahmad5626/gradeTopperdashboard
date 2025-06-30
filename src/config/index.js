@@ -1,7 +1,8 @@
 export const initialUpdateButton={
 heroSectionButton:"",
 honorTheirButton:"",
-fundraiseWithFaithButton:""
+fundraiseWithFaithButton:"",
+discoveryButton:""
 }
 export const initialInspiringInstitutes = {
     headline: "",
@@ -14,6 +15,8 @@ export const initialRecommendedCauses={
     category: "",
     pageHeadline: "",
     pageSubHeadline: "",
+    pageCta: "",
+    pageImage: ""
 }
 export const initailGivenAmount={
     amount:Number(0),

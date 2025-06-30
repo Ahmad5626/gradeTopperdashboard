@@ -1,8 +1,8 @@
-const baseAPI= "https://give-v59n.onrender.com";
+import { baseUrl } from "../utils/Constant";
 
 export const createRecommendedCauses = async (data) => {
     try {
-        const response = await fetch(`${baseAPI}/v1/api/recommendedCauses/create-recommended-couses`, {
+        const response = await fetch(`${baseUrl}/v1/api/recommendedCauses/create-recommended-couses`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -20,7 +20,7 @@ export const createRecommendedCauses = async (data) => {
 
 export const getAllRecommendedCauses=async()=>{
  try {
-    const res=await fetch(`${baseAPI}/v1/api/recommendedCauses/get-recommended-couses`,{
+    const res=await fetch(`${baseUrl}/v1/api/recommendedCauses/get-recommended-couses`,{
      method:"GET",
      headers:{
        "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export const getAllRecommendedCauses=async()=>{
 }
 export const updateRecommendedCauses=async(id,data)=>{
     try {
-        const res=await fetch(`${baseAPI}/v1/api/recommendedCauses/update-inspiring-institutes/${id}`,{
+        const res=await fetch(`${baseUrl}/v1/api/recommendedCauses/update-inspiring-institutes/${id}`,{
             method:"PUT",
             headers:{
                 "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export const updateRecommendedCauses=async(id,data)=>{
 }
 export const deleteRecommendedCauses=async(id)=>{
     try {
-        const res=await fetch(`${baseAPI}/v1/api/recommendedCauses/delete-recommended-couses/${id}`,{
+        const res=await fetch(`${baseUrl}/v1/api/recommendedCauses/delete-recommended-couses/${id}`,{
             method:"DELETE",
             headers:{
                 "Content-Type": "application/json",

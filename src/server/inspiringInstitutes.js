@@ -1,8 +1,8 @@
-const baseAPI= "https://give-v59n.onrender.com";
+import { baseUrl } from "../utils/Constant";
 
 export const createInspiringInstitutes = async (data) => {
     try {
-        const response = await fetch(`${baseAPI}/v1/api/inspiringInstitutes/create-inspiring-institutes`, {
+        const response = await fetch(`${baseUrl}/v1/api/inspiringInstitutes/create-inspiring-institutes`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -20,7 +20,7 @@ export const createInspiringInstitutes = async (data) => {
 
 export const getAllInspiringInstitutes=async()=>{
  try {
-    const res=await fetch(`${baseAPI}/v1/api/inspiringInstitutes/get-inspiring-institutes`,{
+    const res=await fetch(`${baseUrl}/v1/api/inspiringInstitutes/get-inspiring-institutes`,{
      method:"GET",
      headers:{
        "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export const getAllInspiringInstitutes=async()=>{
 }
 export const updateInspiringInstitutes=async(id,data)=>{
     try {
-        const res=await fetch(`${baseAPI}/v1/api/inspiringInstitutes/update-inspiring-institutes/${id}`,{
+        const res=await fetch(`${baseUrl}/v1/api/inspiringInstitutes/update-inspiring-institutes/${id}`,{
             method:"PUT",
             headers:{
                 "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export const updateInspiringInstitutes=async(id,data)=>{
 }
 export const deleteInspiringInstitutes=async(id)=>{
     try {
-        const res=await fetch(`${baseAPI}/v1/api/inspiringInstitutes/delete-inspiring-institutes/${id}`,{
+        const res=await fetch(`${baseUrl}/v1/api/inspiringInstitutes/delete-inspiring-institutes/${id}`,{
             method:"DELETE",
             headers:{
                 "Content-Type": "application/json",

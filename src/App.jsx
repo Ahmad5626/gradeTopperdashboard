@@ -9,7 +9,7 @@ import PageNotFound from "./pages/PageNotFound";
 import Profile from "./components/Profile";
 import Home from "./components/Home";
 
-import MoneyBlockerFinder from "./components/MoneyBlockerFinder";
+
 
 
 
@@ -24,6 +24,7 @@ import Campaigns from "./components/Campaigns";
 import EditButtons from "./components/EditButtons";
 import RecommendedCauses from "./components/RecommendedCauses";
 import FundRequest from "./components/FundRequest";
+import Donations from "./components/Donations";
 
 function App() {
   
@@ -45,7 +46,7 @@ function App() {
               <Route path="editbuttons" element={<EditButtons />} />
               <Route path="inspiringinstitutes" element={<InspiringInstitutes />} />
               <Route path="recommendedcauses" element={<RecommendedCauses />} />
-              <Route path="teacher" element={<MoneyBlockerFinder />} />
+              <Route path="teacher" element={<Donations />} />
               <Route path="request" element={<Request />} />
               <Route path="pastclass" element={<PastClass />} />
               <Route path="upcommingclass" element={<Upcommingclass />} />

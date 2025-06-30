@@ -230,7 +230,7 @@ function App() {
 
   const handleDeleteItem =async (id) => {
     // const item = data.find((item) => (item._id || item.id) === id)
-    const response= await fetch(`https://give-v59n.onrender.com/v1/api/delete-campaigns/${id}`,{
+    const response= await fetch(`http://localhost:9000/v1/api/delete-campaigns/${id}`,{
       method:"DELETE",
       headers: {
         'Content-Type': 'application/json',
@@ -284,7 +284,7 @@ function App() {
       const campaignId = editedItem._id || editedItem.id
 
       // Make API call to update campaign
-      const response = await fetch( `https://give-v59n.onrender.com/v1/api/update-campaigns/${campaignId}`,
+      const response = await fetch( `http://localhost:9000/v1/api/update-campaigns/${campaignId}`,
         {
           method: "PUT",
           headers: {
@@ -351,7 +351,7 @@ const handleChangenGivenAmount= async(field,value)=>{
 }
 const handleAddGivenAmount=async()=>{
  const campaignId = editedItem._id || editedItem.id
-  const response=await fetch(`https://give-v59n.onrender.com/v1/api/given-amount/${campaignId}`,{
+  const response=await fetch(`http://localhost:9000/v1/api/given-amount/${campaignId}`,{
     method:"POST",
     headers: {
       'Content-Type': 'application/json',
@@ -370,7 +370,7 @@ const handleAddGivenAmount=async()=>{
 
 
 const handleDeleteGivenAmount=async(id,given)=>{
-  const response=await fetch(`https://give-v59n.onrender.com/v1/api/delete-given-amount/${id}/${given}`,{
+  const response=await fetch(`http://localhost:9000/v1/api/delete-given-amount/${id}/${given}`,{
     method:"DELETE",
     headers: {
       'Content-Type': 'application/json',

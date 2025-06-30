@@ -1,11 +1,11 @@
 
-const baseAPI = "https://give-v59n.onrender.com";
+import { baseUrl } from "../utils/Constant";
 export const uploadFile = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
 
   try {
-    const res = await fetch(`${baseAPI}/api/upload`, {
+    const res = await fetch(`${baseUrl}/api/upload`, {
       method: "POST",
       body: formData,
     });

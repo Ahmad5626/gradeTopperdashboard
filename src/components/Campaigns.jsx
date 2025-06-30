@@ -8,7 +8,8 @@ import { toast, Toaster } from "sonner"
 import { Button } from "./ui/button"
 import { initailGivenAmount } from "../config"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card'
-
+import { baseUrl } from "../utils/Constant";
+// import { ComprehensiveEditor } from "./Ckediter"
 function App() {
   // Get real data from your backend via useAuth hook
   const { campaignData } = useAuth()
@@ -299,7 +300,7 @@ function App() {
       // Mock API call for demo purposes
       // In production, uncomment the fetch call
       
-      const response = await fetch(`https://give-v59n.onrender.com/v1/api/delete-campaigns/${id}`, {
+      const response = await fetch(`${baseUrl}/v1/api/delete-campaigns/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -349,7 +350,7 @@ function App() {
       // Mock API call for demo purposes
       // In production, uncomment the fetch call
       
-      const response = await fetch(`https://give-v59n.onrender.com/v1/api/update-campaigns/${campaignId}`, {
+      const response = await fetch(`${baseUrl}/v1/api/update-campaigns/${campaignId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -422,7 +423,7 @@ function App() {
       // Mock API call for demo purposes
       // In production, uncomment the fetch call
       
-      const response = await fetch(`https://give-v59n.onrender.com/v1/api/given-amount/${campaignId}`, {
+      const response = await fetch(`${baseUrl}/v1/api/given-amount/${campaignId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -465,7 +466,7 @@ function App() {
       // Mock API call for demo purposes
       // In production, uncomment the fetch call
       
-      const response = await fetch(`https://give-v59n.onrender.com/v1/api/delete-given-amount/${id}/${given}`, {
+      const response = await fetch(`${baseUrl}/v1/api/delete-given-amount/${id}/${given}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

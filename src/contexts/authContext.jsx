@@ -2,29 +2,30 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import axios, { all } from 'axios';
 import { toast } from 'sonner';
 import { initialInspiringInstitutes, initialRecommendedCauses, initialUpdateButton } from '../config';
-import updatebutton from '../server/buttons';
+import  {updatebutton, getButtons } from '../server/buttons';
 import {createInspiringInstitutes,deleteInspiringInstitutes,getAllInspiringInstitutes, updateInspiringInstitutes} from '../server/inspiringInstitutes';
 import { uploadFile } from '../server/uploadImg';
 import { createRecommendedCauses, deleteRecommendedCauses, getAllRecommendedCauses } from '../server/recommendedCauses';
 import { deleteFundRequest, getAllFundRequests } from '../server/fundRequest';
 // import getCampaignData from '../server/capmaign';
-
+ import { baseUrl } from "../utils/Constant";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [allUserData, setAllUserData]=useState([]) 
     const [campaignData, setCampaignData]=useState([])
-    const [buttonData, setButtonData]=useState(initialUpdateButton)
+    const [buttonData, setButtonData]=useState({})
+    // const [allButtonData, setAllButtonData]=useState({})
     const [institutesFormData, setInstitutesFormData]=useState(initialInspiringInstitutes)
     const [allInstituesData, setAllInstituesData]=useState([])
     const [recommendedCausesFormData, setRecommendedCausesFormData]=useState(initialRecommendedCauses)
     const [allCausesData, setAllCausesData]=useState([])
     const [uploadingHero, setUploadingHero] = useState(false)
     const [fundRequsetData, setFundRequestData]=useState([])
- const baseAPI = "https://give-v59n.onrender.com";
+
 const deleteUser = async (id) => {
   try {
-    const res = await fetch(`https://give-v59n.onrender.com/auth/delete-user/${id}`, {
+    const res = await fetch(`${baseUrl}/auth/delete-user/${id}`, {
       method: "DELETE",
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +36,7 @@ const deleteUser = async (id) => {
 
     if (data.success) {
       toast.success(data.message);
-      window.location.reload(); // ✅ reloads page after success
+       getData()// ✅ reloads page after success
     }
 
   } catch (err) {
@@ -84,10 +85,14 @@ if(res){
       console.log(error);
    }
 }
-    useEffect(()=>{
-        async function getData(){
+async function getButtonsData() {
+    const data = await getButtons();
+    if (data) setButtonData(data);
+  }
+
+     async function getData(){
          try{
-           const response=await fetch(`${baseAPI}/auth/get-user-data`)
+           const response=await fetch(`${baseUrl}/auth/get-user-data`)
            const data=await response.json()
           
            setAllUserData(data.data)
@@ -95,12 +100,14 @@ if(res){
            console.log(err)
          }
         }
+    useEffect(()=>{
+     
         getData()
        
         const getCampaignData=async()=>{
     try {
       
-        const res=await fetch(`${baseAPI}/v1/api/get-all-campaigns`);
+        const res=await fetch(`${baseUrl}/v1/api/get-all-campaigns`);
     const data=await res.json();
     
     setCampaignData(data.data)
@@ -117,6 +124,7 @@ if(res){
        
        getRecommendedCauses()
       getFundRequests()
+      getButtonsData()
         },[])
 
 
@@ -132,12 +140,17 @@ const handleChange = (e) => {
   }));
 };
 
+
+
 const updateHandlesubmit = async (e) => {
   e.preventDefault();
-  const data = updatebutton(buttonData);
+  const form = new FormData(e.target);
+  const formData = Object.fromEntries(form);
+  const data = updatebutton(formData);
   
   if(data){
       toast.success("Link updated successfully");
+    getButtonsData()
   }
   else{
       toast.error("Link update failed");
@@ -145,6 +158,8 @@ const updateHandlesubmit = async (e) => {
   
  
 };
+console.log(buttonData);
+
 
 
 // Inspiring Institutes
@@ -177,15 +192,21 @@ const createInstitutesHandlesubmit = async (e) => {
   e.preventDefault();
   const data = createInspiringInstitutes(institutesFormData);
   
-  if(data){
-      toast.success("Institutes updated successfully");
+try {
+    if(data){
+      toast.success("Institutes created successfully");
       // window.location.reload()
+      geInstitutes()
   }
   else{
       toast.error("Institutes update failed");
-  }
+  } 
+} catch (error) {
   
- 
+}finally{
+  geInstitutes()
+  
+}
 };
 //  update Institues
 
@@ -195,12 +216,19 @@ const handleUpdateInstitutes=async()=>{
 
 const handleDeleteInstitutes=async(id)=>{
   const data=await deleteInspiringInstitutes(id)
-  if(data){
+  try {
+    if(data){
     toast.success("Institutes deleted successfully");
-    window.location.reload()
+    geInstitutes()
   }
   else{
     toast.error("Institutes delete failed");
+  }
+    
+  } catch (error) {
+    
+  }finally{
+    geInstitutes()
   }
 }
 
@@ -210,7 +238,7 @@ const handleDeleteInstitutes=async(id)=>{
 
 const updateCampaign =async (id,campaignData) => {
 try {
-   const data = await fetch(`${baseAPI}/v1/api/update-campaigns/${id}`,{
+   const data = await fetch(`${baseUrl}/v1/api/update-campaigns/${id}`,{
   method:"PUT",
   headers: {
     'Content-Type': 'application/json',
@@ -239,46 +267,83 @@ try {
 // create RecommendedCauses
 
 const handleChangeRecommendedCauses=async(e)=>{
-  const {name, value} = e.target;
-  setRecommendedCausesFormData((prevData) => ({
-    ...prevData,
-    [name]: value,
-  }))
+  const {name, value,files} = e.target;
+
+  
+  try {
+    setUploadingHero(true)
+   if (files && files[0]) {
+    const file = files[0];
+    const uploadedUrl = await uploadFile(file);
+
+    setRecommendedCausesFormData({
+      ...recommendedCausesFormData,
+      [name]: uploadedUrl,
+    });
+  } else {
+    setRecommendedCausesFormData({
+      ...recommendedCausesFormData,
+      [name]: value,
+    });
+  }
+  } catch (error) {
+    
+  }finally{
+    setUploadingHero(false)
+  }
 }
 const handleCreateRecommendedCauses=async(e)=>{
   e.preventDefault();
   const data =await createRecommendedCauses(recommendedCausesFormData)
-  if(data.success){
+try {
+    if(data.success){
     toast.success("RecommendedCauses Created successfully");
-    window.location.reload()
+    getRecommendedCauses()
   }
   else{
     toast.error("RecommendedCauses update failed");
   }
+} catch (error) {
+  
+}finally{
+  getRecommendedCauses()
+}
 }
 
 // delete RecommendedCauses
 const handleDeleteRecommendedCauses=async(id)=>{
   const data=await deleteRecommendedCauses(id)
-  if(data){
+ try {
+   if(data){
     toast.success("RecommendedCauses deleted successfully");
-    window.location.reload()
+    getRecommendedCauses()
   }
   else{
     toast.error("RecommendedCauses delete failed");
   }
+ } catch (error) {
+  
+ }finally{
+  getRecommendedCauses()
+ }
 }
 
 // fund request
 const handleDeleteFundRequest=async(id)=>{
   const data=await deleteFundRequest(id)
+try {
   if(data){
     toast.success("Fund request deleted successfully");
-    window.location.reload()
+    getFundRequests()
   }
   else{
     toast.error("Fund request delete failed");
   }
+} catch (error) {
+  
+}finally{
+  getFundRequests()
+}
 }
 
 
